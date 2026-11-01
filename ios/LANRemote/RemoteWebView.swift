@@ -6,7 +6,6 @@ struct RemoteWebView: UIViewRepresentable {
 
     func makeUIView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
-
         configuration.allowsInlineMediaPlayback = true
         configuration.mediaTypesRequiringUserActionForPlayback = []
 
@@ -15,67 +14,38 @@ struct RemoteWebView: UIViewRepresentable {
             configuration: configuration
         )
 
-        webView.navigationDelegate = context.coordinator
-        webView.scrollView.isScrollEnabled = false
-        webView.scrollView.bounces = false
-
         webView.isOpaque = false
-        webView.backgroundColor = .black
-        webView.scrollView.backgroundColor = .black
+        webView.backgroundColor = UIColor.black
+        webView.scrollView.backgroundColor = UIColor.black
 
-        webView.load(URLRequest(url: url))
+        // The page itself must be allowed to scroll.
+        webView.scrollView.isScrollEnabled = true
+        webView.scrollView.alwaysBounceVertical = true
+        webView.scrollView.alwaysBounceHorizontal = false
+        webView.scrollView.showsVerticalScrollIndicator = true
+        webView.scrollView.showsHorizontalScrollIndicator = false
+        webView.scrollView.contentInsetAdjustmentBehavior = .never
+        webView.scrollView.panGestureRecognizer.isEnabled = true
+
+        // Avoid WKWebView treating ordinary page interactions as delayed touches.
+        webView.scrollView.delaysContentTouches = false
+
+        webView.allowsBackForwardNavigationGestures = false
+
+        var request = URLRequest(url: url)
+        request.cachePolicy = .reloadIgnoringLocalCacheData
+        request.timeoutInterval = 20
+
+        webView.load(request)
 
         return webView
     }
 
-    func updateUIView(
-        _ webView: WKWebView,
-        context: Context
-    ) {
-        if webView.url != url {
-            webView.load(URLRequest(url: url))
-        }
-    }
+    func updateUIView(_ webView: WKWebView, context: Context) {
+        guard webView.url != url else { return }
 
-    func makeCoordinator() -> Coordinator {
-        Coordinator()
-    }
-
-    final class Coordinator: NSObject, WKNavigationDelegate {
-
-        func webView(
-            _ webView: WKWebView,
-            decidePolicyFor navigationAction: WKNavigationAction,
-            decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
-        ) {
-            guard let scheme = navigationAction.request.url?
-                .scheme?.lowercased(),
-                ["http", "https"].contains(scheme) else {
-                decisionHandler(.cancel)
-                return
-            }
-
-            decisionHandler(.allow)
-        }
-
-        func webView(
-            _ webView: WKWebView,
-            didFail navigation: WKNavigation!,
-            withError error: Error
-        ) {
-            print(
-                "PyStream navigation failed: \(error.localizedDescription)"
-            )
-        }
-
-        func webView(
-            _ webView: WKWebView,
-            didFailProvisionalNavigation navigation: WKNavigation!,
-            withError error: Error
-        ) {
-            print(
-                "PyStream failed to load: \(error.localizedDescription)"
-            )
-        }
+        var request = URLRequest(url: url)
+        request.cachePolicy = .reloadIgnoringLocalCacheData
+        webView.load(request)
     }
 }
