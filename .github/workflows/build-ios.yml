@@ -1,0 +1,55 @@
+name: Build PyStream iOS
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+  pull_request:
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build iOS Simulator App
+
+    runs-on: macos-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check Xcode
+        run: |
+          xcode-select -p
+          xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate --spec project.yml
+
+      - name: Build iOS Simulator application
+        run: |
+          xcodebuild \
+            -project PyStream.xcodeproj \
+            -scheme PyStream \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Upload simulator application
+        uses: actions/upload-artifact@v4
+        with:
+          name: PyStream-iOS-Simulator
+          path: build/Build/Products/Debug-iphonesimulator/PyStream.app
+          if-no-files-found: error
+          retention-days: 14

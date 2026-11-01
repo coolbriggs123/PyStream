@@ -1,0 +1,38 @@
+name: PyStream
+
+options:
+  bundleIdPrefix: com.coolbriggs123
+  deploymentTarget:
+    iOS: "16.0"
+
+targets:
+  PyStream:
+    type: application
+    platform: iOS
+
+    sources:
+      - path: ios/LANRemote
+
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.coolbriggs123.pystream
+        PRODUCT_NAME: PyStream
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        GENERATE_INFOPLIST_FILE: YES
+
+    info:
+      properties:
+        CFBundleDisplayName: PyStream
+
+        NSLocalNetworkUsageDescription: >
+          PyStream connects to your Windows computer over your
+          local network to stream its desktop.
+
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoadsInWebContent: YES
+
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
