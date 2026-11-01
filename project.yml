@@ -16,9 +16,7 @@ targets:
     platform: iOS
 
     sources:
-      - ios/LANRemote/LANRemoteApp.swift
-      - ios/LANRemote/ContentView.swift
-      - ios/LANRemote/RemoteWebView.swift
+      - ios/LANRemote
 
     settings:
       base:
@@ -28,10 +26,11 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
 
     info:
+      path: ios/LANRemote/Generated-Info.plist
       properties:
         CFBundleDisplayName: PyStream
 
-        NSLocalNetworkUsageDescription: "PyStream connects to your Windows computer over your local network."
+        NSLocalNetworkUsageDescription: "PyStream connects to your Windows computer over your local network to stream its desktop."
 
         NSAppTransportSecurity:
           NSAllowsArbitraryLoadsInWebContent: true

@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   build:
-    name: Build iOS Simulator App
+    name: Build PyStream
     runs-on: macos-latest
 
     steps:
@@ -23,22 +23,32 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check Xcode
-        run: xcodebuild -version
+        run: |
+          xcodebuild -version
 
       - name: Install XcodeGen
-        run: brew install xcodegen
-
-      - name: Verify project files
         run: |
-          find ios/LANRemote -type f
+          brew install xcodegen
+
+      - name: Verify source files
+        run: |
+          echo "Checking Swift files..."
+
           test -f ios/LANRemote/LANRemoteApp.swift
           test -f ios/LANRemote/ContentView.swift
           test -f ios/LANRemote/RemoteWebView.swift
 
-      - name: Generate Xcode project
-        run: xcodegen generate --spec project.yml
+          echo "All Swift files found."
 
-      - name: Build application
+      - name: Generate Xcode project
+        run: |
+          xcodegen generate --spec project.yml
+
+          test -d PyStream.xcodeproj
+
+          echo "Xcode project generated successfully."
+
+      - name: Build iOS Simulator application
         run: |
           xcodebuild \
             -project PyStream.xcodeproj \
