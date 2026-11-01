@@ -16,7 +16,10 @@ targets:
     platform: iOS
 
     sources:
-      - ios/LANRemote
+      - path: ios/LANRemote
+        excludes:
+          - Info.plist
+          - Generated-Info.plist
 
     settings:
       base:
