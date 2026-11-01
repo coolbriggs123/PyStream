@@ -16,25 +16,29 @@ permissions:
 jobs:
   build:
     name: Build iOS Simulator App
-
     runs-on: macos-latest
 
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Check Xcode
-        run: |
-          xcode-select -p
-          xcodebuild -version
+        run: xcodebuild -version
 
       - name: Install XcodeGen
         run: brew install xcodegen
 
+      - name: Verify project files
+        run: |
+          find ios/LANRemote -type f
+          test -f ios/LANRemote/LANRemoteApp.swift
+          test -f ios/LANRemote/ContentView.swift
+          test -f ios/LANRemote/RemoteWebView.swift
+
       - name: Generate Xcode project
         run: xcodegen generate --spec project.yml
 
-      - name: Build iOS Simulator application
+      - name: Build application
         run: |
           xcodebuild \
             -project PyStream.xcodeproj \
